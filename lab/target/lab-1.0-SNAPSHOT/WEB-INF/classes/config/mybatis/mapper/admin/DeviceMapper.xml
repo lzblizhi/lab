@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ischoolbar.programmer.dao.DeviceDao">
+	<!-- 添加设备 -->
+	<insert id="add" parameterType="Device">
+		insert into lab_device(id,`name`,photo,quantity,usable,buydate,comment,place) values(#{id},#{name},#{photo},#{quantity},#{usable},#{buydate},#{comment},#{place})
+	</insert>
+	<!-- 修改设备 -->
+	<update id="edit" parameterType="Device">
+		update lab_device set `name`=#{name}, photo = #{photo}, quantity = #{quantity}, usable = #{usable},buydate = #{buydate},place = #{place}, comment = #{comment} where id = #{id}
+	</update>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="long">
+		delete from lab_device where id = #{id}
+	</delete>
+	<!-- 根据名称查 -->
+	<select id="findByname" parameterType="string" resultType="Device">
+		select * from lab_device where name = #{name}
+	</select>
+	<!-- 分页获取设备列表 -->
+	<select id="getList" parameterType="Map" resultType="Device">
+		select * from lab_device where 1 = 1 
+		<if test="name != null">
+			and name like "%"#{name}"%" 
+		</if>
+		<if test="usable != null">
+			and usable &lt; #{usable}  
+		</if>
+		
+		<!-- <if test="buydate != null and buydate != ''">
+			and buydate &lt; #{buydate,jdbcType=DATE}
+		</if> -->
+		<if test="buydate != null and buydate != ''">
+			<![CDATA[   and DATE_FORMAT(buydate, '%Y-%m-%d')<=  DATE_FORMAT(#{buydate}, '%Y-%m-%d')   ]]>
+		</if>
+	</select>
+
+</mapper>
