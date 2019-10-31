@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ischoolbar.programmer.dao.ScheduleDao">
+	<!-- 添加实验室 -->
+	<insert id="add" parameterType="Lab">
+		insert into lab_schedule(id,`emailmsg`,subject,time,email,status,uid) 
+		values(#{id},#{emailmsg},#{subject},#{time},#{email},#{status},#{uid})
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="long">
+		delete from lab_schedule where id = #{id}
+	</delete>
+	
+	<!-- 分页获取实验室列表 -->
+	<select id="list" parameterType="Map" resultType="Schedule">
+		select * from lab_schedule where uid = #{uid}
+	</select>
+
+	<!-- 根据日期 -->
+	<select id="findByDate" parameterType="String" resultType="Schedule">
+		select * from lab_schedule where <![CDATA[   DATE_FORMAT(time, '%Y-%m-%d') =  DATE_FORMAT(#{today}, '%Y-%m-%d')   ]]>
+
+	</select>
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ischoolbar.programmer.dao.LabOrderDao">
+	<!-- 分页获取申请列表 -->
+	<resultMap type="LabOrder" id="orderUserResultMap">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="uid" column="uid" />
+		<result property="useTo" column="useTo" />
+		<result property="day" column="day" />
+		<result property="beginclass" column="beginclass" />
+		<result property="endclass" column="endclass" />
+		<result property="email" column="email" />
+		<result property="astatus" column="astatus" />
+		<result property="rstatus" column="rstatus" />
+		<result property="part" column="part" />
+		
+		<!-- association ：配置一对一属性 -->
+		<!-- property:order里面的User属性名 -->
+		<!-- javaType:属性类型 -->
+		<association property="user" javaType="user">
+			<!-- id:声明主键，表示user_id是关联查询对象的唯一标识-->
+			<id property="id" column="uid" />
+			<result property="username" column="username" />
+		</association>
+		
+	</resultMap>
+	<select id="getList" parameterType="LabOrder" resultMap="orderUserResultMap" >
+		select o.id,o.name,o.uid,o.useTo,o.day,o.beginclass,o.endclass,o.email,o.astatus,o.rstatus,o.part, u.username from laborder o left join user u on o.uid=u.id
+		where 1 = 1 
+		<if test="name != null and name != ''">
+			and name like "%"#{name}"%" 
+		</if>
+		<if test="uid != null and uid != ''">
+			and uid = #{uid}  
+		</if>
+		<if test="astatus != null and astatus != ''">
+			and astatus = #{astatus}  
+		</if>
+		<if test="rstatus != null and rstatus != ''">
+			and rstatus = #{rstatus}  
+		</if>
+		<if test="day != null and day != ''">
+			and day = #{day}
+		</if>
+		
+		<!-- <if test="buydate != null and buydate != ''">
+			and buydate &lt; #{buydate,jdbcType=DATE}
+		</if> -->
+		<!-- <if test="btime != null and btime != ''">
+			<![CDATA[   and DATE_FORMAT(btime, '%Y-%m-%d') =  DATE_FORMAT(#{btime}, '%Y-%m-%d')   ]]>
+		</if> -->		
+	</select>
+
+	<!-- 获取个人列表 -->
+	<select id="myList" parameterType="Map" resultMap="orderUserResultMap">
+		select o.id,o.name,o.uid,o.useTo,o.number,o.btime,o.rtime,o.email,o.astatus,o.rstatus,o.part, u.username from devorder o left join user u on o.uid=u.id
+		where 1 = 1 
+		<if test="uid != null and uid != ''">
+			and uid = #{uid}  
+		</if>
+	</select>
+	
+	<!-- 根据id查 -->
+	<select id="findById" parameterType="long" resultType="DevOrder">
+		select * from devorder where id = #{id}
+	</select>
+	<!-- 添加实验室预约 -->
+	<insert id="add" parameterType="DevOrder">
+		insert into devorder(id,`name`,uid,part, useTo,number,btime,rtime,email,astatus,rstatus) 
+		values(#{id},#{name},#{uid},#{part},#{useTo},#{number},#{btime},#{rtime},#{email},#{astatus},#{rstatus})
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="edit" parameterType="long">
+		update devorder set astatus = 2 , rstatus = 1 where id = #{id}
+	</update>
+	
+	<update id="retEdit" parameterType="long">
+		update devorder set astatus = 2 , rstatus = 2 where id = #{id}
+	</update>
+		
+	<!-- 删除 -->
+	<delete id="delete" parameterType="long">
+		delete from devorder where id = #{id}
+	</delete>
+	
+</mapper>
